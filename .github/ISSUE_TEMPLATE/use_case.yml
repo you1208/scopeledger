@@ -1,0 +1,34 @@
+name: Real workflow or use case
+description: Describe a maintainer, CI, automation, or coding-agent workflow ScopeLedger could support.
+title: "use case: "
+labels: ["use-case"]
+body:
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow
+      description: What command runs, who or what launches it, and what files it should be allowed to change.
+    validations:
+      required: true
+  - type: textarea
+    id: trust
+    attributes:
+      label: Trust decision
+      description: What question should a receipt help a maintainer answer?
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current workaround
+      description: How is this checked today, if at all?
+  - type: dropdown
+    id: public
+    attributes:
+      label: Public integration
+      options:
+        - I can share a public repository or minimal reproduction
+        - I can share a redacted policy only
+        - I cannot share an example
+    validations:
+      required: true

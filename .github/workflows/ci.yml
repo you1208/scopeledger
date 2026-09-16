@@ -23,3 +23,15 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: scopeledger run --policy scopeledger.toml -- python examples/write_result.py
       - run: scopeledger verify --policy scopeledger.toml
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build
+      - run: python -m build
+      - run: python -m pip install dist/*.whl
+      - run: scopeledger --version

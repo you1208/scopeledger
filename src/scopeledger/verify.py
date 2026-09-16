@@ -5,6 +5,7 @@ from typing import Any
 
 from .checker import evaluate
 from .policy import Policy
+from .snapshot import diff
 from .util import read_json, sha256_bytes, sha256_json
 
 
@@ -32,8 +33,27 @@ def verify_ledger(policy: Policy) -> tuple[bool, list[dict[str, str]]]:
             (receipt.get("previous_receipt_sha256") == previous_sha, "receipt chain mismatch"),
         ]
         if evidence.get("decision") == "executed":
-            expected_status, expected_findings = evaluate(evidence["policy"], evidence)
+            raw_before = evidence.get("before")
+            raw_after = evidence.get("after")
+            before = raw_before if isinstance(raw_before, dict) else {}
+            after = raw_after if isinstance(raw_after, dict) else {}
+            try:
+                derived_changes = diff(before, after)
+                before_digest = sha256_json(before["files"])
+                after_digest = sha256_json(after["files"])
+            except (KeyError, TypeError):
+                derived_changes = None
+                before_digest = None
+                after_digest = None
+            qualified_evidence = {**evidence, "changes": derived_changes or []}
+            expected_status, expected_findings = evaluate(evidence["policy"], qualified_evidence)
             checks.extend([
+                (derived_changes is not None, "before/after manifests are invalid"),
+                (before.get("digest") == before_digest, "before manifest digest mismatch"),
+                (after.get("digest") == after_digest, "after manifest digest mismatch"),
+                (evidence.get("changes") == derived_changes, "recorded changes do not match manifests"),
+                (receipt.get("subject_before_sha256") == before.get("digest"), "receipt before digest mismatch"),
+                (receipt.get("subject_after_sha256") == after.get("digest"), "receipt after digest mismatch"),
                 (receipt.get("status") == expected_status, "status is not supported by evidence"),
                 (receipt.get("findings") == expected_findings, "findings are not supported by evidence"),
             ])

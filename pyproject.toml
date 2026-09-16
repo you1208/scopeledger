@@ -20,9 +20,14 @@ classifiers = [
   "Topic :: Software Development :: Quality Assurance",
 ]
 
+[project.urls]
+Homepage = "https://github.com/you1208/scopeledger"
+Documentation = "https://github.com/you1208/scopeledger#readme"
+Issues = "https://github.com/you1208/scopeledger/issues"
+Changelog = "https://github.com/you1208/scopeledger/blob/main/CHANGELOG.md"
+
 [project.scripts]
 scopeledger = "scopeledger.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-

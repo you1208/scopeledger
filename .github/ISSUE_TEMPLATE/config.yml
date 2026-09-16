@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/you1208/scopeledger/security/advisories/new
+    about: Privately report policy bypass, path escape, receipt forgery, or unintended disclosure.

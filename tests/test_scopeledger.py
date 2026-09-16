@@ -8,6 +8,7 @@ from pathlib import Path
 
 from scopeledger.policy import PolicyError, load_policy
 from scopeledger.runner import run
+from scopeledger.util import sha256_json
 from scopeledger.verify import verify_ledger
 
 
@@ -88,6 +89,48 @@ class ScopeLedgerTests(unittest.TestCase):
         valid, problems = verify_ledger(load_policy(root / "scopeledger.toml"))
         self.assertFalse(valid)
         self.assertTrue(any("evidence digest" in item["message"] for item in problems))
+
+    def test_forged_change_list_cannot_hide_denied_effect(self) -> None:
+        temporary, root = self.make_workspace()
+        self.addCleanup(temporary.cleanup)
+        script = "from pathlib import Path; p=Path('protected'); p.mkdir(); (p/'secret.txt').write_text('x')"
+        _, receipt_path = run(load_policy(root / "scopeledger.toml"), ["python", "-c", script])
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        evidence_path = root / ".scopeledger" / receipt["evidence_file"]
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+
+        evidence["changes"] = []
+        receipt["status"] = "PASS"
+        receipt["findings"] = []
+        receipt["evidence_sha256"] = sha256_json(evidence)
+        evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+        receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+        valid, problems = verify_ledger(load_policy(root / "scopeledger.toml"))
+        self.assertFalse(valid)
+        messages = {item["message"] for item in problems}
+        self.assertIn("recorded changes do not match manifests", messages)
+        self.assertIn("status is not supported by evidence", messages)
+
+    def test_policy_revision_preserves_historical_verification(self) -> None:
+        temporary, root = self.make_workspace()
+        self.addCleanup(temporary.cleanup)
+        create = "from pathlib import Path; p=Path('out'); p.mkdir(); (p/'result.txt').write_text('one')"
+        update = "from pathlib import Path; Path('out/result.txt').write_text('two')"
+        first_policy = load_policy(root / "scopeledger.toml")
+        first_receipt, _ = run(first_policy, ["python", "-c", create])
+        self.assertEqual("PASS", first_receipt["status"])
+
+        (root / "scopeledger.toml").write_text(
+            POLICY.replace("timeout_seconds = 5", "timeout_seconds = 6"),
+            encoding="utf-8",
+        )
+        second_policy = load_policy(root / "scopeledger.toml")
+        second_receipt, _ = run(second_policy, ["python", "-c", update])
+        self.assertEqual("PASS", second_receipt["status"])
+
+        valid, problems = verify_ledger(second_policy)
+        self.assertTrue(valid, problems)
 
     def test_tampered_stop_finding_fails_verification(self) -> None:
         temporary, root = self.make_workspace()
