@@ -31,7 +31,7 @@ scopeledger run --policy scopeledger.toml -- python examples/write_result.py
 scopeledger verify --policy scopeledger.toml
 ```
 
-On Windows PowerShell, activate with `.venv\\Scripts\\Activate.ps1`.
+On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`.
 
 The included example permits changes only under `demo-output/`. A successful run writes evidence and a receipt beneath `.scopeledger/` and prints a compact result:
 
