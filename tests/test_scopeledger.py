@@ -8,6 +8,7 @@ from pathlib import Path
 
 from scopeledger.policy import PolicyError, load_policy
 from scopeledger.runner import run
+from scopeledger.util import sha256_json
 from scopeledger.verify import verify_ledger
 
 
@@ -88,6 +89,28 @@ class ScopeLedgerTests(unittest.TestCase):
         valid, problems = verify_ledger(load_policy(root / "scopeledger.toml"))
         self.assertFalse(valid)
         self.assertTrue(any("evidence digest" in item["message"] for item in problems))
+
+    def test_forged_change_list_cannot_hide_denied_effect(self) -> None:
+        temporary, root = self.make_workspace()
+        self.addCleanup(temporary.cleanup)
+        script = "from pathlib import Path; p=Path('protected'); p.mkdir(); (p/'secret.txt').write_text('x')"
+        _, receipt_path = run(load_policy(root / "scopeledger.toml"), ["python", "-c", script])
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        evidence_path = root / ".scopeledger" / receipt["evidence_file"]
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+
+        evidence["changes"] = []
+        receipt["status"] = "PASS"
+        receipt["findings"] = []
+        receipt["evidence_sha256"] = sha256_json(evidence)
+        evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+        receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+        valid, problems = verify_ledger(load_policy(root / "scopeledger.toml"))
+        self.assertFalse(valid)
+        messages = {item["message"] for item in problems}
+        self.assertIn("recorded changes do not match manifests", messages)
+        self.assertIn("status is not supported by evidence", messages)
 
     def test_tampered_stop_finding_fails_verification(self) -> None:
         temporary, root = self.make_workspace()
