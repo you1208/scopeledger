@@ -14,12 +14,13 @@ This is intentionally smaller than an agent framework. It can wrap a command lau
 - A command denied at preflight was not launched by ScopeLedger.
 - The recorded before/after regular-file and symbolic-link manifests produce the recorded change set.
 - The decision can be independently derived from recorded evidence.
-- Removing, editing, or reordering records in the retained chain is detectable by verification.
+- Removing, editing, or reordering a record while retaining a later receipt that binds to it is detectable by verification.
 
 ## Claims v0.1 does not make
 
 - The command was isolated from the host, network, credentials, or processes.
 - Every intermediate or external effect was observed.
+- Deleting the ledger or truncating its tail was detected without an externally retained expected head.
 - An attacker able to replace the entire ledger cannot create a different history.
 - A successful policy proves that the produced software is correct or safe.
 
