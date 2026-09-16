@@ -28,8 +28,6 @@ def verify_ledger(policy: Policy) -> tuple[bool, list[dict[str, str]]]:
         checks = [
             (receipt.get("run_id") == evidence.get("run_id"), "run id mismatch"),
             (receipt.get("policy_sha256") == evidence.get("policy_sha256"), "policy digest mismatch"),
-            (evidence.get("policy") == policy.raw, "recorded policy does not match verifier policy"),
-            (evidence.get("policy_sha256") == policy.sha256, "evidence policy does not match verifier policy"),
             (receipt.get("evidence_sha256") == sha256_json(evidence), "evidence digest mismatch"),
             (receipt.get("previous_receipt_file") == previous_name, "previous receipt name mismatch"),
             (receipt.get("previous_receipt_sha256") == previous_sha, "receipt chain mismatch"),

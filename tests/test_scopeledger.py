@@ -112,6 +112,26 @@ class ScopeLedgerTests(unittest.TestCase):
         self.assertIn("recorded changes do not match manifests", messages)
         self.assertIn("status is not supported by evidence", messages)
 
+    def test_policy_revision_preserves_historical_verification(self) -> None:
+        temporary, root = self.make_workspace()
+        self.addCleanup(temporary.cleanup)
+        create = "from pathlib import Path; p=Path('out'); p.mkdir(); (p/'result.txt').write_text('one')"
+        update = "from pathlib import Path; Path('out/result.txt').write_text('two')"
+        first_policy = load_policy(root / "scopeledger.toml")
+        first_receipt, _ = run(first_policy, ["python", "-c", create])
+        self.assertEqual("PASS", first_receipt["status"])
+
+        (root / "scopeledger.toml").write_text(
+            POLICY.replace("timeout_seconds = 5", "timeout_seconds = 6"),
+            encoding="utf-8",
+        )
+        second_policy = load_policy(root / "scopeledger.toml")
+        second_receipt, _ = run(second_policy, ["python", "-c", update])
+        self.assertEqual("PASS", second_receipt["status"])
+
+        valid, problems = verify_ledger(second_policy)
+        self.assertTrue(valid, problems)
+
     def test_tampered_stop_finding_fails_verification(self) -> None:
         temporary, root = self.make_workspace()
         self.addCleanup(temporary.cleanup)
