@@ -1,6 +1,7 @@
 # ScopeLedger
 
 [![CI](https://github.com/you1208/scopeledger/actions/workflows/ci.yml/badge.svg)](https://github.com/you1208/scopeledger/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Run commands inside a declared scope. Keep receipts that can be checked without trusting the runner.**
 
@@ -24,6 +25,8 @@ An agent saying “tests passed” is a claim. ScopeLedger turns a narrow class 
 Requires Python 3.11 or newer.
 
 ```bash
+git clone https://github.com/you1208/scopeledger.git
+cd scopeledger
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install -e .
@@ -32,6 +35,8 @@ scopeledger verify --policy scopeledger.toml
 ```
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`.
+
+For an existing repository, the [adoption guide](docs/adoption-guide.md) shows a commit-pinned installation. Once the package is published, `python -m pip install scopeledger` will be the normal installation path.
 
 The included example permits changes only under `demo-output/`. A successful run writes evidence and a receipt beneath `.scopeledger/` and prints a compact result:
 
@@ -91,6 +96,10 @@ See [SECURITY.md](SECURITY.md) for reporting and the v0.1 threat boundary.
 ## Project status
 
 v0.1 is intentionally narrow: one local command, one workspace, deterministic file-effect checks, local receipts. Feedback is welcome, especially from maintainers using coding agents in real repositories.
+
+- Follow the [adoption guide](docs/adoption-guide.md) to add ScopeLedger to an existing repository.
+- Read the [design and trust model](docs/design.md) before relying on receipts.
+- See the [public roadmap](ROADMAP.md) and open an issue with a real workflow that ScopeLedger should support.
 
 ## License
 

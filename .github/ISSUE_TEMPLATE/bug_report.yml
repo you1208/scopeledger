@@ -1,0 +1,48 @@
+name: Bug report
+description: Report reproducible behavior that differs from the documented policy or trust model.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Please remove secrets, private paths, and sensitive command output before submitting.
+  - type: input
+    id: version
+    attributes:
+      label: ScopeLedger version or commit
+      placeholder: 0.1.0 or a full commit SHA
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Windows 11, Python 3.12
+    validations:
+      required: true
+  - type: textarea
+    id: policy
+    attributes:
+      label: Minimal policy and command
+      description: Include the smallest redacted example that reproduces the behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and receipt findings
+    validations:
+      required: true
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security check
+      options:
+        - label: This report does not disclose a vulnerability or sensitive data.
+          required: true
