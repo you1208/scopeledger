@@ -1,0 +1,8 @@
+.scopeledger/
+.venv/
+*.egg-info/
+__pycache__/
+demo-output/
+dist/
+build/
+

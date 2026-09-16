@@ -1,0 +1,19 @@
+version = 1
+
+[scope]
+root = "."
+allow_changes = ["demo-output/**"]
+deny_changes = ["src/**", "tests/**", "pyproject.toml"]
+ignore = [".git/**", ".venv/**", "**/__pycache__/**", "*.egg-info/**"]
+
+[command]
+executables = ["python", "python3"]
+timeout_seconds = 30
+
+[checks]
+require_exit_code = 0
+required_files = ["demo-output/result.txt"]
+
+[receipts]
+directory = ".scopeledger"
+
