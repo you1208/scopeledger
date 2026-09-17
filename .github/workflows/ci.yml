@@ -21,6 +21,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e .
       - run: python -m unittest discover -s tests -v
+      - run: python examples/three_decisions.py
       - run: scopeledger run --policy scopeledger.toml -- python examples/write_result.py
       - run: scopeledger verify --policy scopeledger.toml
 

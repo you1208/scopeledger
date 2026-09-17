@@ -2,15 +2,15 @@
 
 This guide adds one evidence-backed command to an existing repository without changing the command itself.
 
-## 1. Install a pinned revision
+## 1. Install a pinned release
 
-Until the first PyPI release is available, install the reviewed commit directly:
+Install the public release from [PyPI](https://pypi.org/project/scopeledger/0.1.0/) with Python 3.11 or newer:
 
 ```bash
-python -m pip install "scopeledger @ git+https://github.com/you1208/scopeledger.git@0720530fd9d910ce8bd831901ff4aef0e588ddd3"
+python -m pip install scopeledger==0.1.0
 ```
 
-Pinning avoids silently changing the tool between runs. After PyPI publication, pin an exact package version instead.
+Pinning avoids silently changing the tool between runs.
 
 ## 2. Declare the smallest useful scope
 
@@ -74,7 +74,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install "scopeledger @ git+https://github.com/you1208/scopeledger.git@0720530fd9d910ce8bd831901ff4aef0e588ddd3"
+      - run: python -m pip install scopeledger==0.1.0
       - run: scopeledger run --policy scopeledger.toml -- python scripts/build_result.py
       - run: scopeledger verify --policy scopeledger.toml
 ```
