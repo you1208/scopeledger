@@ -1,6 +1,7 @@
 # ScopeLedger
 
 [![CI](https://github.com/you1208/scopeledger/actions/workflows/ci.yml/badge.svg)](https://github.com/you1208/scopeledger/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/scopeledger)](https://pypi.org/project/scopeledger/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Run commands inside a declared scope. Keep receipts that can be checked without trusting the runner.**
@@ -18,25 +19,32 @@ An agent saying “tests passed” is a claim. ScopeLedger turns a narrow class 
 - Did anything outside the declared scope change?
 - Were required outputs produced?
 - Does the receipt still match its evidence?
-- Has earlier history been removed or rewritten?
+- Do retained receipts and their recorded links remain consistent? Detecting tail deletion requires an externally retained expected head.
 
 ## Quick start
 
-Requires Python 3.11 or newer.
+Requires Python 3.11 or newer. [Version 0.1.0 is available on PyPI](https://pypi.org/project/scopeledger/0.1.0/).
+
+```bash
+python -m pip install scopeledger==0.1.0
+scopeledger --version
+```
+
+To run the bundled example in a dedicated checkout:
 
 ```bash
 git clone https://github.com/you1208/scopeledger.git
 cd scopeledger
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install -e .
+python -m pip install scopeledger==0.1.0
 scopeledger run --policy scopeledger.toml -- python examples/write_result.py
 scopeledger verify --policy scopeledger.toml
 ```
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`.
 
-For an existing repository, the [adoption guide](docs/adoption-guide.md) shows a commit-pinned installation. Once the package is published, `python -m pip install scopeledger` will be the normal installation path.
+For an existing repository, follow the [adoption guide](docs/adoption-guide.md). For a disposable demonstration of all three outcomes, run `python examples/three_decisions.py` from this checkout; see the [recorded demo](docs/three-decisions.md).
 
 The included example permits changes only under `demo-output/`. A successful run writes evidence and a receipt beneath `.scopeledger/` and prints a compact result:
 
